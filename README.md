@@ -1,9 +1,8 @@
-<<<<<<< HEAD
 # citypicker
 
-> citypicker with vue struct
+> 用vue写的一个城市联动选择器插件
 
-## Build Setup
+## 使用
 
 ``` bash
 # install dependencies
@@ -14,13 +13,4 @@ npm run dev
 
 # build for production with minification
 npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
 ```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-=======
-# cityPicker
-vue cityPicker on mobile
->>>>>>> 8da0d50d717574ab4c72e8c03fe8b75ec7916737
