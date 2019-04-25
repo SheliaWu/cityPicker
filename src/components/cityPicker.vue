@@ -1,18 +1,22 @@
 <template>
   <div>
-    <select class="province" @change="selectProv">
-      <option :value="index" v-for="(item,index) in provinces">{{item}}</option>
-    </select>
-    <select class="city" @change="selectCity">
-      <option :value="index" v-for="(item,index) in citys">{{item}}</option>
-    </select>
-    <select class="dist" @change="selectDist">
-      <option :value="index" v-for="(item,index) in dists">{{item}}</option>
-    </select>
+  <div class="wrapper">
+      <select class="province" @change="selectProv" v-model="index1">
+        <option :value="index" v-for="(item,index) in provinces" v-bind:key="index" >{{item}}</option>
+      </select>
+      <select class="city" @change="selectCity"  v-model="index2">
+        <option :value="index" v-for="(item,index) in citys" v-bind:key="index">{{item}}</option>
+      </select>
+      <select class="dist" @change="selectDist" v-model="index3">
+        <option :value="index" v-for="(item,index) in dists" v-bind:key="index">{{item}}</option>
+      </select>
+  </div>
+  <div class="show_result">选择的地点为：{{provinces[index1]}}-{{citys[index2]}}->{{dists[index3]}}</div>
   </div>
 </template>
 
 <script>
+  import axios from  'axios'
   export default{
     name: 'cityPicker',
     data () {
@@ -21,60 +25,65 @@
         provinces:[],
         citys:[],
         dists:[],
-        select:[]
+        index1:0,
+        index2:0,
+        index3:0
       }
     },
-    mounted() {
-      this.getData()
+    created() {
+      this.initialData()
     },
     methods: {
-      getData:function() {
-        this.$http.get('../../static/city-data.json')
-          .then((response) => {
-            this.dataArr = response.body
-            console.log(this.dataArr)
+      initialData:function() {
+        axios.get('./static/city-data.json')
+          .then((res) => {
+            this.dataArr = res.data
             this.dataArr.forEach((item) => {
               this.provinces.push(item.name)
             })
-            this.select = this.dataArr[0]
-            let province = this.select.children
-            province.forEach((item) => {
+            let initialProv = this.dataArr[0]
+            this.province = this.dataArr[0].name
+            let citys = initialProv.children
+            this.city = this.dataArr[0].children[0].name
+            citys.forEach((item) => {
               this.citys.push(item.name)
             })
-            let dist = this.select.children[0].children
-            dist.forEach((item) => {
+            let dists = initialProv.children[0].children
+            this.city = this.dataArr[0].children[0].children[0].name
+            dists.forEach((item) => {
               this.dists.push(item.name)
             })
-
-          }, response => {
-            console.log("error")
           })
+          .catch(err => console.log(err))
       },
       selectProv: function(ele) {
-        let index = ele.target.value
-        //清除数据
-        this.citys = []
-        this.dists = []
-        this.select = this.dataArr[index]
-        let province = this.select.children
-        province.forEach((item) => {
-          this.citys.push(item.name)
-        })
-        let dist = this.select.children[0].children
-          dist.forEach((item) => {
-            this.dists.push(item.name)
-          })
+        this.index1 = ele.target.value
+        this.index2 =  0
+        this.index3 = 0
+        this.renderCitys()
+        this.renderDists()
       },
       selectCity: function(ele) {
-        let index = ele.target.value
-        this.dists = []
-        let dist = this.select.children[index].children
-          dist.forEach((item) => {
-            this.dists.push(item.name)
-          })
+        this.index2 = ele.target.value
+        this.index3 = 0
+        this.renderDists()
       },
-      selectDist: function() {
-
+      selectDist: function(ele){
+        this.index3 = ele.target.value
+      },
+      renderCitys(){
+        this.citys = []
+        let citys = this.dataArr[this.index1].children
+        citys.forEach((item) => {
+          this.citys.push(item.name)
+        })
+      },
+      renderDists(){
+        this.dists = []
+        let dists = this.dataArr[this.index1].children[this.index2].children
+        dists.forEach((item) => {
+          this.dists.push(item.name)
+        })
       }
     }
   }
@@ -87,5 +96,9 @@
   }
   select:focus{
     outline:none;
+  }
+  .show_result{
+    margin-top: 20px;
+    text-align:center;
   }
 </style>
